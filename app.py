@@ -78,14 +78,23 @@ st.metric("Humidity (%)", hive1_humidity)
 st.subheader(f"Hives 2–{NUM_HIVES}: Manual Weights / Heft Test")
 manual_data = []
 manual_varroa = []
+manual_frames_bees = []
+manual_frames_brood = []
+
 for i in range(2, NUM_HIVES+1):
     w = st.number_input(f"Hive {i} Weight (lbs)", min_value=0.0, step=0.1)
     v = st.number_input(f"Hive {i} Varroa (%)", min_value=0.0, step=0.1)
+    frames_bees = st.number_input(f"Hive {i} Frames of Bees", min_value=0, max_value=20, value=8)
+    frames_brood = st.number_input(f"Hive {i} Frames of Brood", min_value=0, max_value=20, value=6)
     manual_data.append({"Hive_ID": i, "Weight_lbs": w})
     manual_varroa.append({"Hive_ID": i, "Varroa": v})
+    manual_frames_bees.append({"Hive_ID": i, "Frames_Bees": frames_bees})
+    manual_frames_brood.append({"Hive_ID": i, "Frames_Brood": frames_brood})
 
 manual_weights = pd.DataFrame(manual_data)
 manual_varroa_df = pd.DataFrame(manual_varroa)
+manual_frames_bees_df = pd.DataFrame(manual_frames_bees)
+manual_frames_brood_df = pd.DataFrame(manual_frames_brood)
 
 # ----------------------------
 # Hive Cards Overview
@@ -95,16 +104,21 @@ cols = st.columns(4)
 for i in range(1, NUM_HIVES+1):
     with cols[i % 4]:
         st.markdown(f"### Hive {i}")
-        st.write("Frames Bees: 8")
-        st.write("Brood: 6")
         if i == 1:
             varroa_val = hive1_varroa
             weight_val = hive1_weight
+            frames_bees_val = st.number_input("Frames of Bees (Hive 1)", min_value=0, max_value=20, value=8)
+            frames_brood_val = st.number_input("Frames of Brood (Hive 1)", min_value=0, max_value=20, value=6)
         else:
             varroa_val = manual_varroa_df.loc[manual_varroa_df['Hive_ID']==i, 'Varroa'].values[0]
             weight_val = manual_weights.loc[manual_weights['Hive_ID']==i, 'Weight_lbs'].values[0]
+            frames_bees_val = manual_frames_bees_df.loc[manual_frames_bees_df['Hive_ID']==i, 'Frames_Bees'].values[0]
+            frames_brood_val = manual_frames_brood_df.loc[manual_frames_brood_df['Hive_ID']==i, 'Frames_Brood'].values[0]
+
         st.write(f"Varroa: {varroa_val}%")
         st.write(f"Weight: {weight_val} lbs")
+        st.write(f"Frames Bees: {frames_bees_val}")
+        st.write(f"Brood: {frames_brood_val}")
 
 # ----------------------------
 # Swarm Risk (color-coded)
